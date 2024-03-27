@@ -26,6 +26,14 @@ export default defineComponent({
       { name: 'views', field: 'views', label: 'VIEWS', sortable: true, align: 'left' }
     ]
 
+    const getPosts = async () => {
+      try {
+        const response = api.get('')
+      } catch (error) {
+        
+      }
+    }
+
     return {
       posts,
       columns
