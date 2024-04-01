@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import { api } from 'boot/axios'
 
 export default defineComponent({
@@ -26,11 +26,16 @@ export default defineComponent({
       { name: 'views', field: 'views', label: 'VIEWS', sortable: true, align: 'left' }
     ]
 
+    onMounted(() => {
+      getPosts()
+    })
+
     const getPosts = async () => {
       try {
-        const response = api.get('')
+        const { data } = await api.get('posts')
+        posts.value = data
       } catch (error) {
-        
+        console.error(error)
       }
     }
 
