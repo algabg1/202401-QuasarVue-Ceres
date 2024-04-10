@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          Ceres Botânica
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
@@ -59,6 +59,24 @@ const linksList = [
     caption: '',
     icon: 'home',
     route: { name: 'home' }
+  },
+  {
+    title: 'Notícias',
+    caption: '',
+    icon: 'article',
+    route: { name: 'noticias' }
+  },
+  {
+    title: 'Sobre nós',
+    caption: '',
+    icon: 'local_florist',
+    route: { name: 'sobrenos' }
+  },
+  {
+    title: 'Entrar',
+    caption: '',
+    icon: 'person',
+    route: { name: 'entrar' }
   }
 ]
 

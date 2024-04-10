@@ -1,8 +1,48 @@
 {
   "posts": [
-    { "id": "1", "title": "a title", "views": 100 },
-    { "id": "2", "title": "another title 1", "views": 200 },
-    { "id": "3", "title": "another title 2", "views": 200 },
-    { "id": "4", "title": "another title 3", "views": 200 }
+    { 
+      "id": "1", 
+      "NomePlanta": "Orquídea", 
+      "NomeCientifico": "Orchidaceae", 
+      "Descrição": "Orquídeas são plantas conhecidas pela beleza de suas flores e variedade de cores.", 
+      "Categoria": "Plantas Ornamentais", 
+      "Origem": "Diversas regiões tropicais e subtropicais do mundo.", 
+      "Cuidados": "Rega moderada, luz indireta, temperatura estável e umidade adequada.", 
+      "Imagem": "quasar-project/src/imagens/Orquídea.jpg", 
+      "DataRegistro": "2024-04-10"
+    },
+    { 
+      "id": "2", 
+      "NomePlanta": "Suculenta", 
+      "NomeCientifico": "Succulent Plantae", 
+      "Descrição": "Suculentas são plantas que armazenam água em suas folhas, adaptadas a ambientes áridos.", 
+      "Categoria": "Plantas de Ambientes Secos", 
+      "Origem": "Regiões áridas e semiáridas de várias partes do mundo.", 
+      "Cuidados": "Rega esporádica, luz solar direta, solo bem drenado.", 
+      "Imagem": "quasar-project/src/imagens/Suculenta.jpg", 
+      "DataRegistro": "2024-04-10"
+    },
+    { 
+      "id": "3", 
+      "NomePlanta": "Samambaia", 
+      "NomeCientifico": "Polypodiopsida", 
+      "Descrição": "Samambaias são plantas conhecidas por suas folhas delicadas e capacidade de crescimento em ambientes sombreados.", 
+      "Categoria": "Plantas de Sombra", 
+      "Origem": "Florestas tropicais e subtropicais ao redor do mundo.", 
+      "Cuidados": "Rega regular, luz indireta a sombra, umidade alta.", 
+      "Imagem": "quasar-project/src/imagens/Samambaia.jpg", 
+      "DataRegistro": "2024-04-10"
+    },
+    { 
+      "id": "4", 
+      "NomePlanta": "Rosa", 
+      "NomeCientifico": "Rosa sp.", 
+      "Descrição": "Rosas são flores populares em jardins devido à sua fragrância e variedade de cores.", 
+      "Categoria": "Plantas de Jardim", 
+      "Origem": "Europa, Ásia e América do Norte.", 
+      "Cuidados": "Rega regular, luz solar direta, solo bem drenado e adubação adequada.", 
+      "Imagem": "quasar-project/src/imagens/Rosa.jpg", 
+      "DataRegistro": "2024-04-10"
+    }  
   ]
 }
