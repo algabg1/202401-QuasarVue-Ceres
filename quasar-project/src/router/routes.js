@@ -7,7 +7,8 @@ const routes = [
       { path: 'noticias', name: 'noticias', component: () => import('pages/NewsPage.vue') },
       { path: 'sobrenos', name: 'sobrenos', component: () => import('pages/AboutPage.vue') },
       { path: 'entrar', name: 'entrar', component: () => import('pages/LoginPage.vue') },
-      { path: 'cadastrar', name: 'cadastrar', component: () => import('pages/CadastrarPage.vue') }
+      { path: 'cadastrar', name: 'cadastrar', component: () => import('pages/CadastrarPage.vue') },
+      { path: 'cadastrar-projeto', name: 'cadastrar projeto', component: () => import('pages/CadastrarProjeto.vue') }
     ]
   },
 
