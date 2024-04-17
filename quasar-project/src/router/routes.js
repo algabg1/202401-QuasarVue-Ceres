@@ -3,10 +3,11 @@ const routes = [
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', name: 'home', component: () => import('pages/IndexPage.vue') },
-      { path: '', name: 'noticias', component: () => import('pages/NewsPage.vue') },
-      { path: '', name: 'sobrenos', component: () => import('pages/AboutPage.vue') },
-      { path: '', name: 'entrar', component: () => import('pages/LoginPage.vue') }
+      { path: 'home', name: 'home', component: () => import('pages/IndexPage.vue') },
+      { path: 'noticias', name: 'noticias', component: () => import('pages/NewsPage.vue') },
+      { path: 'sobrenos', name: 'sobrenos', component: () => import('pages/AboutPage.vue') },
+      { path: 'entrar', name: 'entrar', component: () => import('pages/LoginPage.vue') },
+      { path: 'cadastrar', name: 'cadastrar', component: () => import('pages/CadastrarPage.vue') }
     ]
   },
 
