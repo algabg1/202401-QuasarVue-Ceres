@@ -49,6 +49,7 @@
  </template>
 
 <script>
+import axios from 'axios'
 export default {
   data () {
     return {
@@ -60,18 +61,24 @@ export default {
     }
   },
   methods: {
-    async handleSubmit () {
-      // Lógica de autenticação aqui
-      console.log('Login:', this.loginData.username)
-      console.log('Senha:', this.loginData.password)
-      this.isLoading = true
 
-      // Exemplo: simulando uma requisição assíncrona para autenticação
-      setTimeout(() => {
+    async handleSubmit () {
+      try {
+        // Lógica de autenticação aqui
+        alert(this.loginData.username)
+        this.isLoading = true
+
+        // Fazendo a chamada GET para o endpoint do proxy
+        const response = await axios.get('/api/v1/user/2')
+
+        // Exibindo a resposta no console (substitua isso pela sua lógica de manipulação de dados)
+        console.log(response.data)
+      } catch (error) {
+        console.error('Erro ao autenticar:', error)
+        alert('Ocorreu um erro ao autenticar. Por favor, tente novamente.')
+      } finally {
         this.isLoading = false
-        // Redirecionar para a página após o login
-        // this.$router.push('/dashboard');
-      }, 1500)
+      }
     },
     handleRecoverAccount () {
       // Lógica para recuperar a conta
