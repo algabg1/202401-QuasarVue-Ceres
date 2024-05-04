@@ -79,9 +79,18 @@ export default configure((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
-      // https: true
-      port: 8080,
-      open: true // opens browser window automatically
+      proxy: {
+        '/api': { // Prefixo para todas as chamadas API
+          target: 'https://api.mockapi.com',
+          changeOrigin: true,
+          pathRewrite: { '^/api': '/api' }, // Manter o prefixo '/api' na chamada
+          secure: false,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'x-api-key': '74cb00234bba403790c387c965625193'
+          }
+        }
+      }
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#framework
