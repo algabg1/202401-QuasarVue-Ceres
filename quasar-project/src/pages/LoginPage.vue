@@ -69,10 +69,11 @@ export default {
         this.isLoading = true
 
         // Fazendo a chamada GET para o endpoint do proxy
-        const response = await axios.get('/api/v1/user/2')
+        const response = await axios.get(`/api/v1/user/${this.loginData.username}`)
 
         // Exibindo a resposta no console (substitua isso pela sua lógica de manipulação de dados)
-        console.log(response.data)
+        // eslint-disable-next-line no-unused-vars
+        alert(response.data.data.Id)
       } catch (error) {
         console.error('Erro ao autenticar:', error)
         alert('Ocorreu um erro ao autenticar. Por favor, tente novamente.')

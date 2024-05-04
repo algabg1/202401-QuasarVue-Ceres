@@ -5,78 +5,41 @@
     </div>
 
     <div class="news-content">
-      <div class="news-item" v-for="news in newsItems" :key="news.id">
-        <div class="news-image">
-          <img :src="news.image" :alt="news.title">
+      <div class="news-item" v-for="(user, index) in newsItems" :key="index">
+        <div class="user-info">
+          <p>Login: {{ user.Id }}</p>
+          <p>Senha: {{ user.senha }}</p>
+          <button @click="showDetails(index)" class="read-more">Ler +</button>
         </div>
-        <div class="news-text">
-          <h3>{{ news.title }}</h3>
-          <p>{{ news.description }}</p>
-          <a :href="news.link" class="read-more">Leia mais</a>
+        <div v-if="user.showDetails">
+          <!-- Aqui você pode adicionar o conteúdo detalhado -->
+          <p>Detalhes: Aqui está o conteúdo detalhado para {{ user.Id }}</p>
         </div>
-      </div>
-    </div>
-
-    <div class="news-footer">
-      <div class="social-links">
-        <a href="#" class="social-link">
-          <i class="fab fa-tiktok"></i>
-        </a>
-        <a href="#" class="social-link">
-          <i class="fab fa-facebook-f"></i>
-        </a>
-        <a href="#" class="social-link">
-          <i class="fab fa-twitter"></i>
-        </a>
-        <a href="#" class="social-link">
-          <i class="fab fa-instagram"></i>
-        </a>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
-      newsItems: [
-        {
-          id: 1,
-          image: '../imagens/Rosa.jpg',
-          title: 'Tendências de Paisagismo Urbano: Como as Cidades Estão Integrando Mais Áreas Verdes',
-          description: 'A medida que as cidades crescem e se desenvolvem, a necessidade de espaços verdes dentro do ambiente urbano aumenta.',
-          link: '#'
-        },
-        {
-          id: 2,
-          image: '../imagens/Rosa.jpg',
-          title: 'As Melhores Plantas para Purificar o Ar de Sua Casa, Segundo Especialistas',
-          description: 'Com o aumento da preocupação com a qualidade do ar em ambientes fechados, muitas pessoas estão recorrendo a plantas...',
-          link: '#'
-        },
-        {
-          id: 3,
-          image: '../imagens/Rosa.jpg',
-          title: 'Cinco Dicas Essenciais para Manter suas Plantas de Interior Saudáveis Durante o Inverno',
-          description: 'Com a chegada do inverno, muitos entusiastas de plantas de interior se preocupam em manter seus preciosos vegetais verdes...',
-          link: '#'
-        },
-        {
-          id: 4,
-          image: '../imagens/Rosa.jpg',
-          title: 'Projeto Inovador Transforma Telhados em Jardins Sustentáveis em Áreas Urbanas',
-          description: 'Uma iniciativa interessante está transformando telhados em espaços verdes e sustentáveis, trazendo benefícios...',
-          link: '#'
-        },
-        {
-          id: 5,
-          image: '../imagens/Rosa.jpg',
-          title: 'Estudo Revela os Benefícios Psicológicos de Ter Plantas de Interior no Ambiente de Trabalho',
-          description: 'Uma pesquisa recente destaca os efeitos positivos que a presença de plantas no local de trabalho pode ter...',
-          link: '#'
-        }
-      ]
+      newsItems: []
+    }
+  },
+  created () {
+    this.fetchData()
+  },
+  methods: {
+    async fetchData () {
+      try {
+        const response = await axios.get('/api/v1/users')
+        this.newsItems = response.data.data
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
     }
   }
 }
