@@ -40,9 +40,9 @@
     <div class="news-modal" v-if="showModal">
       <div class="modal-content">
         <span class="close-button" @click="closeModal">&times;</span>
-        <h2>{{ selectedNews.titulo }}</h2>
-        <p class="news-date">{{ formatDate(selectedNews.dataPostagem) }}</p>
+        <h2 class = "internal-modal-content">{{ selectedNews.titulo }}</h2>
         <p class="news-content">{{ selectedNews.conteudo }}</p>
+        <p class="news-date">{{ formatDate(selectedNews.dataPostagem) }}</p>
       </div>
     </div>
   </div>
@@ -108,6 +108,14 @@ export default {
 </script>
 
 <style scoped>
+
+.internal-modal-content {
+  font-size: 14px;
+  max-width: 300px; /* Define a largura máxima para o título */
+  white-space: nowrap; /* Evita que o texto quebre em várias linhas */
+  overflow: hidden; /* Esconde o conteúdo que excede a largura máxima */
+  text-overflow: ellipsis; /* Adiciona reticências (...) para indicar que há mais texto */
+}
 .news-page {
   background-color: #f0f0f0;
   padding: 40px;
