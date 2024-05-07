@@ -64,16 +64,30 @@ export default {
 
     async handleSubmit () {
       try {
-        // Lógica de autenticação aqui
-        alert(this.loginData.username)
         this.isLoading = true
-
         // Fazendo a chamada GET para o endpoint do proxy
-        const response = await axios.get(`/api/v1/user/${this.loginData.username}`)
+        const response = await axios.get('/api/v1/users')
+        const userData = response.data.data
 
-        // Exibindo a resposta no console (substitua isso pela sua lógica de manipulação de dados)
-        // eslint-disable-next-line no-unused-vars
-        alert(response.data.data.Id)
+        // Verificando se o usuário existe e se a senha está correta
+        const user = userData.find(
+          (u) =>
+            u.login === this.loginData.username &&
+            u.senha === this.loginData.password
+        )
+
+        if (user) {
+          // Login bem-sucedido
+          alert('Login bem-sucedido!')
+          // Você pode redirecionar o usuário para a página desejada aqui
+          // this.$router.push('/dashboard');
+        } else if (!user && userData.some((u) => u.login === this.loginData.username)) {
+          // Senha incorreta
+          alert('Senha incorreta. Por favor, tente novamente.')
+        } else {
+          // Usuário não encontrado
+          alert('Usuário não encontrado. Por favor, verifique o login.')
+        }
       } catch (error) {
         console.error('Erro ao autenticar:', error)
         alert('Ocorreu um erro ao autenticar. Por favor, tente novamente.')

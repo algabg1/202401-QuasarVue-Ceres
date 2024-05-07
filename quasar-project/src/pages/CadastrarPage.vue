@@ -54,9 +54,11 @@
       </q-card-section>
     </q-card>
   </q-page>
- </template>
+</template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -73,23 +75,37 @@ export default {
     async handleRegister () {
       // Verificar se as senhas são iguais
       if (this.registerData.password !== this.registerData.confirmPassword) {
-        // Exibir uma mensagem de erro
         alert('As senhas não são iguais. Tente novamente.')
         return
       }
 
-      // Lógica de registro da nova conta
-      console.log('Nome:', this.registerData.name)
-      console.log('E-mail:', this.registerData.email)
-      console.log('Senha:', this.registerData.password)
       this.isLoading = true
 
-      // Exemplo: simulando uma requisição assíncrona para realizar o registro
-      setTimeout(() => {
+      try {
+        // Criar um objeto com os dados da nova pessoa
+        const newPerson = {
+          nome: this.registerData.name,
+          email: this.registerData.email,
+          senha: this.registerData.password
+        }
+
+        // Fazer a requisição POST para cadastrar a nova pessoa
+        const response = await axios.post('/api/v1/pessoas', newPerson)
+
+        // Verificar se o cadastro foi bem-sucedido
+        if (response.status === 201 || response.status === 200) {
+          alert('Cadastro realizado com sucesso!')
+          // Redirecionar para a página de login após o cadastro
+          this.$router.push('/entrar')
+        } else {
+          alert('Ocorreu um erro durante o cadastro. Tente novamente.')
+        }
+      } catch (error) {
+        console.error('Erro ao cadastrar:', error)
+        alert('Ocorreu um erro durante o cadastro. Tente novamente.')
+      } finally {
         this.isLoading = false
-        // Redirecionar para a página de login após o registro
-        this.$router.push('/entrar')
-      }, 1500)
+      }
     },
     handleLogin () {
       // Redirecionar para a página de login
@@ -99,25 +115,25 @@ export default {
 }
 </script>
 
- <style scoped>
- /* Estilos específicos para este componente */
- .register-card {
+<style scoped>
+/* Estilos específicos para este componente */
+.register-card {
   max-width: 400px; /* Define a largura máxima do card */
   margin: 0 auto; /* Centraliza o card na tela */
- }
- .register-form {
+}
+.register-form {
   display: flex;
   flex-direction: column;
   align-items: center;
- }
- .register-input {
+}
+.register-input {
   max-width: 300px; /* Define a largura máxima dos inputs */
- }
- .register-btn {
+}
+.register-btn {
   margin-top: 20px; /* Espaçamento acima do botão de cadastro */
   transition: transform 0.2s ease-in-out;
- }
- .register-btn:active {
+}
+.register-btn:active {
   transform: scale(0.95);
- }
- </style>
+}
+</style>
