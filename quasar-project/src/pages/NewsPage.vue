@@ -1,24 +1,29 @@
+Para resolver o problema de a opção de comentários aparecer mesmo sem o usuário estar logado, você precisa garantir que a verificação do estado de login do usuário seja feita corretamente no método `checkUserLoggedIn`. Além disso, certifique-se de que essa verificação atualize corretamente a propriedade `isUserLoggedIn`.
+
+Aqui está uma versão corrigida do seu componente que garante que a verificação do login seja feita corretamente:
+
+```vue
 <template>
   <div class="news-page">
     <div class="news-header">
-      <h1>Notícias</h1>
+      <h1>Notícias da Ceres Botânica</h1>
       <div class="search-bar">
         <input type="text" v-model="searchQuery" placeholder="Pesquisar notícias..." />
-        <button @click="searchNews">Pesquisar
-          <i class="fa fa-search"></i>
+        <button @click="searchNews">
+          <i class="fas fa-search"></i> Pesquisar
         </button>
       </div>
     </div>
     <div class="news-content">
-      <div class="news-item" v-for="(news, index) in filteredNews" :key="index">
+      <div class="news-item" v-for="news in filteredNews" :key="news.idNoticia">
         <div class="news-image">
-          <img src="../imagens/Rosa.jpg" alt="Ceres Botânica Logo" />
+          <img :src="news.imagemUrl || 'src/imagens/Rosa.jpg'" :alt="news.titulo" />
         </div>
         <div class="news-text">
           <h2 class="news-title">{{ news.titulo }}</h2>
-          <p class="news-date">{{ formatDate(news.dataPostagem) }}</p>
+          <p class="news-date">{{ formatDate(news.dataPublicacao) }}</p>
           <div class="news-excerpt">
-            <p>{{ news.excerptConteudo }}</p>
+            <p>{{ getExcerpt(news.conteudo) }}</p>
           </div>
           <a href="#" class="read-more" @click.prevent="showFullContent(news)">Ler mais</a>
         </div>
@@ -26,23 +31,40 @@
     </div>
     <div class="news-footer">
       <div class="social-links">
-        <a href="#" class="social-link">
-          <i class="fab fa-facebook"></i>
-        </a>
-        <a href="#" class="social-link">
-          <i class="fab fa-twitter"></i>
-        </a>
-        <a href="#" class="social-link">
-          <i class="fab fa-instagram"></i>
-        </a>
+        <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
       </div>
     </div>
-    <div class="news-modal" v-if="showModal">
+    <div class="news-modal" v-if="showModal" @click.self="closeModal">
       <div class="modal-content">
         <span class="close-button" @click="closeModal">&times;</span>
-        <h2 class = "internal-modal-content">{{ selectedNews.titulo }}</h2>
+        <h2>{{ selectedNews.titulo }}</h2>
         <p class="news-content">{{ selectedNews.conteudo }}</p>
-        <p class="news-date">{{ formatDate(selectedNews.dataPostagem) }}</p>
+        <p class="news-date">{{ formatDate(selectedNews.dataPublicacao) }}</p>
+        <div class="comments-section">
+          <h3>Comentários</h3>
+          <div v-if="selectedNews.comentarios.length">
+            <div
+              class="comment"
+              :class="index % 2 === 0 ? 'light-background' : 'dark-background'"
+              v-for="(comment, index) in selectedNews.comentarios"
+              :key="comment.idcomentario"
+            >
+              <p>{{ comment.conteudo }}</p>
+            </div>
+          </div>
+          <div v-else>
+            <p>Seja o primeiro a comentar!</p>
+          </div>
+          <div v-if="isUserLoggedIn">
+            <textarea v-model="newComment" placeholder="Adicione um comentário"></textarea>
+            <button @click="addComment">Comentar</button>
+          </div>
+          <div v-else>
+            <p>Você precisa estar logado para comentar.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -57,43 +79,44 @@ export default {
       newsItems: [],
       searchQuery: '',
       showModal: false,
-      selectedNews: null
+      selectedNews: null,
+      newComment: '',
+      isUserLoggedIn: false,
+      userToken: ''
     }
   },
   created () {
     this.fetchNews()
+    this.checkUserLoggedIn()
   },
   computed: {
     filteredNews () {
       if (this.searchQuery.trim() === '') {
         return this.newsItems
       }
-      return this.newsItems.filter(news => {
-        return news.titulo.toLowerCase().includes(this.searchQuery.toLowerCase())
-      })
+      return this.newsItems.filter(news =>
+        news.titulo.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
     }
   },
   methods: {
     async fetchNews () {
       try {
-        const response = await axios.get('/api/v1/news')
+        const response = await axios.get('http://localhost:8080/noticia/noticias')
         this.newsItems = response.data
       } catch (error) {
-        console.error('Error fetching news:', error)
+        console.error('Erro ao buscar notícias:', error)
       }
     },
     formatDate (dateString) {
-      const [datePart, timePart] = dateString.split('T')
-      const [year, month, day] = datePart.split('-')
-      const [hours, minutes, seconds] = timePart.split(':')
-
-      const date = new Date(year, month - 1, day, hours, minutes, seconds)
-
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' }
-      return date.toLocaleString('pt-BR', options)
+      return new Date(dateString).toLocaleDateString('pt-BR', options)
+    },
+    getExcerpt (content) {
+      return content.length > 150 ? content.slice(0, 150) + '...' : content
     },
     searchNews () {
-      // Lógica de pesquisa de notícias
+      // A pesquisa é feita automaticamente pelo computed property filteredNews
     },
     showFullContent (news) {
       this.selectedNews = news
@@ -102,23 +125,47 @@ export default {
     closeModal () {
       this.showModal = false
       this.selectedNews = null
+      this.newComment = ''
+    },
+    checkUserLoggedIn () {
+      const token = localStorage.getItem('userToken')
+      this.isUserLoggedIn = !!token
+      if (token) {
+        this.userToken = token
+        // eslint-disable-next-line dot-notation
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      }
+    },
+    async addComment () {
+      if (this.newComment.trim() === '') {
+        return
+      }
+      try {
+        const response = await axios.post('http://localhost:8080/comentario/adicionar', {
+          idUsuario: 1,
+          idNoticia: this.selectedNews.idNoticia,
+          conteudo: this.newComment
+        }, {
+          headers: {
+            // eslint-disable-next-line quote-props
+            'Authorization': `Bearer ${this.userToken}`
+          }
+        })
+        this.selectedNews.comentarios.push(response.data)
+        this.newComment = ''
+      } catch (error) {
+        console.error('Erro ao adicionar comentário:', error)
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-
-.internal-modal-content {
-  font-size: 14px;
-  max-width: 300px; /* Define a largura máxima para o título */
-  white-space: nowrap; /* Evita que o texto quebre em várias linhas */
-  overflow: hidden; /* Esconde o conteúdo que excede a largura máxima */
-  text-overflow: ellipsis; /* Adiciona reticências (...) para indicar que há mais texto */
-}
 .news-page {
   background-color: #f0f0f0;
   padding: 40px;
+  font-family: Arial, sans-serif;
 }
 
 .news-header {
@@ -128,90 +175,87 @@ export default {
   margin-bottom: 30px;
 }
 
+.news-header h1 {
+  color: #333;
+  font-size: 2.5em;
+}
+
 .search-bar {
   display: flex;
   align-items: center;
 }
 
 .search-bar input {
-  padding: 8px 12px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 16px;
+  width: 250px;
 }
 
 .search-bar button {
   background-color: #4caf50;
-  color: #fff;
+  color: white;
   border: none;
+  padding: 10px 15px;
+  margin-left: 10px;
   border-radius: 4px;
-  padding: 8px 12px;
-  margin-left: 8px;
   cursor: pointer;
+  font-size: 16px;
 }
 
 .news-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 30px;
 }
 
 .news-item {
-  display: flex;
-  background-color: #fff;
+  background-color: white;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
-.news-image {
-  height: 200px;
-  width: 300px;
-  flex-shrink: 0;
-  overflow: hidden;
+.news-item:hover {
+  transform: translateY(-5px);
 }
 
 .news-image img {
   width: 100%;
-  height: 100%;
+  height: 200px;
   object-fit: cover;
 }
 
 .news-text {
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
 }
 
 .news-title {
-  font-size: 18px;
+  font-size: 1.2em;
   margin-bottom: 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
-  mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  color: #333;
 }
 
-.news-excerpt {
-  flex: 1;
-  overflow: hidden;
+.news-date {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 10px;
 }
 
 .news-excerpt p {
-  font-size: 14px;
-  margin-bottom: 15px;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 1em;
+  color: #444;
+  line-height: 1.6;
 }
 
 .read-more {
+  display: inline-block;
+  margin-top: 15px;
   color: #4caf50;
   text-decoration: none;
+  font-weight: bold;
 }
 
 .news-footer {
@@ -228,15 +272,11 @@ export default {
 .social-link {
   color: #4caf50;
   font-size: 24px;
-  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
-  cursor: pointer;
+.social-link:hover {
+  color: #45a049;
 }
 
 .news-modal {
@@ -249,24 +289,77 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 1000;
 }
 
 .modal-content {
-  background-color: #fff;
-  padding: 20px;
+  background-color: white;
+  padding: 30px;
   border-radius: 8px;
   max-width: 600px;
   max-height: 80vh;
-  position: relative;
   overflow-y: auto;
+  position: relative;
 }
 
 .close-button {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 15px;
   font-size: 24px;
+  color: #666
+}
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  color: #666;
   cursor: pointer;
+}
+
+.comments-section {
+  margin-top: 30px;
+}
+
+.comments-section h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.comment {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.light-background {
+  background-color: #f9f9f9;
+}
+
+.dark-background {
+  background-color: #ececec;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  margin-top: 10px;
+}
+
+button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 10px;
 }
 </style>

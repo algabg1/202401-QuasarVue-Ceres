@@ -2,7 +2,7 @@
   <q-page padding>
     <q-card class="register-card">
       <q-card-section>
-        <q-form @submit.prevent="handleRegister" class="register-form">
+        <q-form @submit.prevent="onRegister" class="register-form">
           <q-input
             outlined
             v-model="registerData.nome"
@@ -47,7 +47,7 @@
               flat
               color="primary"
               label="Voltar para o Login"
-              @click="handleLogin"
+              @click="onLogin"
             />
           </q-card-actions>
         </q-form>
@@ -55,10 +55,12 @@
     </q-card>
   </q-page>
 </template>
+
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from 'axios'
+import RegisterController from '../register-controller/RegisterController'
+
 export default {
   setup () {
     const router = useRouter()
@@ -69,40 +71,30 @@ export default {
     })
     const confirmPassword = ref('')
     const isLoading = ref(false)
-    const handleRegister = async () => {
-      if (registerData.value.senha !== confirmPassword.value) {
-        alert('As senhas não são iguais. Tente novamente.')
-        return
-      }
-      isLoading.value = true
-      try {
-        const response = await axios.post('http://localhost:8080/auth/registrar', registerData.value)
-        if (response.status === 201 || response.status === 200) {
-          alert('Cadastro realizado com sucesso!')
-          router.push('/entrar')
-        } else {
-          alert('Ocorreu um erro durante o cadastro. Tente novamente.')
-        }
-      } catch (error) {
-        console.error('Erro ao cadastrar:', error)
-        alert('Ocorreu um erro durante o cadastro. Tente novamente.')
-      } finally {
-        isLoading.value = false
-      }
+
+    const setIsLoading = (loading) => {
+      isLoading.value = loading
     }
-    const handleLogin = () => {
-      router.push('/entrar')
+
+    const onRegister = () => {
+      RegisterController.handleRegister(registerData.value, confirmPassword.value, router, setIsLoading)
     }
+
+    const onLogin = () => {
+      RegisterController.handleLogin(router)
+    }
+
     return {
       registerData,
       confirmPassword,
       isLoading,
-      handleRegister,
-      handleLogin
+      onRegister,
+      onLogin
     }
   }
 }
 </script>
+
 <style scoped>
 .register-card {
   max-width: 400px;

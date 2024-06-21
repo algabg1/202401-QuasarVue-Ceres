@@ -5,14 +5,15 @@
         <q-form @submit.prevent="handleSubmit" class="login-form">
           <q-input
             outlined
-            v-model="loginData.username"
-            label="Login"
-            placeholder="Digite seu login"
+            v-model="loginData.email"
+            label="E-mail"
+            type="email"
+            placeholder="Digite seu e-mail"
             class="login-input"
           />
           <q-input
             outlined
-            v-model="loginData.password"
+            v-model="loginData.senha"
             label="Senha"
             type="password"
             placeholder="Digite sua senha"
@@ -46,93 +47,89 @@
       </q-card-section>
     </q-card>
   </q-page>
- </template>
+</template>
 
-<script>
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { setToken } from '../auth'
 import axios from 'axios'
-export default {
-  data () {
-    return {
-      loginData: {
-        username: '',
-        password: ''
-      },
-      isLoading: false
+
+const $q = useQuasar()
+const router = useRouter()
+
+const loginData = ref({
+  email: '',
+  senha: ''
+})
+const isLoading = ref(false)
+
+async function handleSubmit () {
+  try {
+    isLoading.value = true
+    const response = await axios.post('http://localhost:8080/auth/login', loginData.value)
+
+    if (response.data && response.data.token) {
+      localStorage.setItem('userToken', response.data.token)
+      setToken(response.data.token)
+      // eslint-disable-next-line dot-notation
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
+
+      $q.notify({
+        color: 'positive',
+        message: 'Login realizado com sucesso!',
+        icon: 'check'
+      })
+
+      router.push('/dashboard')
+    } else {
+      throw new Error('Token não recebido')
     }
-  },
-  methods: {
-
-    async handleSubmit () {
-      try {
-        this.isLoading = true
-        // Fazendo a chamada GET para o endpoint do proxy
-        const response = await axios.get('/api/v1/users')
-        const userData = response.data.data
-
-        // Verificando se o usuário existe e se a senha está correta
-        const user = userData.find(
-          (u) =>
-            u.login === this.loginData.username &&
-            u.senha === this.loginData.password
-        )
-
-        if (user) {
-          // Login bem-sucedido
-          alert('Login bem-sucedido!')
-          // Você pode redirecionar o usuário para a página desejada aqui
-          // this.$router.push('/dashboard');
-        } else if (!user && userData.some((u) => u.login === this.loginData.username)) {
-          // Senha incorreta
-          alert('Senha incorreta. Por favor, tente novamente.')
-        } else {
-          // Usuário não encontrado
-          alert('Usuário não encontrado. Por favor, verifique o login.')
-        }
-      } catch (error) {
-        console.error('Erro ao autenticar:', error)
-        alert('Ocorreu um erro ao autenticar. Por favor, tente novamente.')
-      } finally {
-        this.isLoading = false
-      }
-    },
-    handleRecoverAccount () {
-      // Lógica para recuperar a conta
-      console.log('Recuperar Conta clicado')
-      // Implemente a lógica de recuperação de conta aqui
-    },
-    handleCreateAccount () {
-      // Lógica para criar uma nova conta
-      console.log('Cadastrar Conta clicado')
-      this.$router.push('/cadastrar')
-      // Implemente a lógica de criação de conta aqui
-    }
+  } catch (error) {
+    console.error('Erro ao autenticar:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Falha na autenticação. Verifique suas credenciais.',
+      icon: 'warning'
+    })
+  } finally {
+    isLoading.value = false
   }
 }
+
+function handleRecoverAccount () {
+  console.log('Recuperar Conta clicado')
+  // Implemente a lógica de recuperação de conta aqui
+}
+
+function handleCreateAccount () {
+  // Lógica para criar uma nova conta
+  console.log('Cadastrar Conta clicado')
+  router.push('/cadastrar')
+}
+
 </script>
 
- <style scoped>
- /* Estilos específicos para este componente */
- .login-card {
-  max-width: 400px; /* Define a largura máxima do card */
-  margin: 0 auto; /* Centraliza o card na tela */
- }
- .login-form {
+<style scoped>
+.login-card {
+  max-width: 400px;
+  margin: 0 auto;
+}
+.login-form {
   display: flex;
   flex-direction: column;
   align-items: center;
- }
- .login-input {
-  max-width: 300px; /* Define a largura máxima dos inputs */
- }
- .login-password {
-  margin-top: 20px; /* Adicionando margem superior ao campo de senha */
- }
- .login-btn {
-  margin-top: 20px; /* Espaçamento acima do botão de login */
+}
+.login-input {
+  max-width: 300px;
+  margin-bottom: 15px;
+}
+.login-btn {
+  margin-top: 20px;
   transition: transform 0.2s ease-in-out;
 }
-
 .login-btn:active {
   transform: scale(0.95);
 }
- </style>
+</style>

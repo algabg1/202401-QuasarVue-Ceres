@@ -47,8 +47,8 @@ export default configure((ctx) => {
       vueRouterMode: 'history', // available values: 'hash', 'history'
       env: {
         API_URL: ctx.dev
-          ? 'http://localhost:3000/'
-          : 'http://localhost:3000/'
+          ? 'http://localhost:8080/'
+          : 'http://localhost:8080/'
       },
       // vueRouterBase,
       // vueDevtools,
@@ -80,14 +80,12 @@ export default configure((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
     devServer: {
       proxy: {
-        '/api': { // Prefixo para todas as chamadas API
-          target: 'https://api.mockapi.com',
+        '/auth': { // Proxy apenas para o endpoint de autenticação
+          target: 'http://localhost:8080/',
           changeOrigin: true,
-          pathRewrite: { '^/api': '/api' }, // Manter o prefixo '/api' na chamada
           secure: false,
           headers: {
-            'Access-Control-Allow-Origin': '*',
-            'x-api-key': '74cb00234bba403790c387c965625193'
+            'Access-Control-Allow-Origin': '*'
           }
         }
       }
