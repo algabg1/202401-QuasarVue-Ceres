@@ -7,9 +7,10 @@ const routes = [
       { path: 'noticias', name: 'noticias', component: () => import('pages/NewsPage.vue') },
       { path: 'sobrenos', name: 'sobrenos', component: () => import('pages/AboutPage.vue') },
       { path: 'entrar', name: 'entrar', component: () => import('pages/LoginPage.vue') },
+      { path: 'profile', name: 'profile', component: () => import('pages/ProfilePage.vue') },
       // { path: 'cadastrar', name: 'cadastrar', component: () => import('pages/CadastrarPage.vue') },
       { path: 'cadastrar', name: 'cadastrar', component: () => import('pages/register/register-view/RegisterView.vue') },
-      { path: 'cadastrar-projeto', name: 'cadastrar projeto', component: () => import('pages/CadastrarProjeto.vue') }
+      { path: 'cadastrar-projeto', name: 'cadastrar-projeto', component: () => import('pages/CadastrarProjeto.vue') }
     ]
   },
   // { path: 'cadastrar', name: 'cadastrar', component: () => import('pages/CadastrarPage.vue') }

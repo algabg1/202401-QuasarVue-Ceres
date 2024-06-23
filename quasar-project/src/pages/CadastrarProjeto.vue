@@ -5,41 +5,26 @@
       <form @submit.prevent="submitForm">
         <div class="form-group">
           <label for="projectName">Nome do Projeto</label>
-          <input type="text" id="projectName" v-model="project.name" required>
+          <input type="text" id="projectName" v-model="project.nome" required>
         </div>
         <div class="form-group">
           <label for="projectDescription">Descrição do Projeto</label>
-          <textarea id="projectDescription" v-model="project.description" required></textarea>
+          <textarea id="projectDescription" v-model="project.descricao" required></textarea>
         </div>
         <div class="form-group">
-          <label for="projectLocation">Localização do Projeto</label>
-          <select id="projectLocation" v-model="project.location" required>
-            <option value="" disabled selected>Selecione uma localização</option>
-            <option value="Localização 1">Localização 1</option>
-            <option value="Localização 2">Localização 2</option>
-            <option value="Localização 3">Localização 3</option>
+          <label for="projectType">Tipo de Projeto</label>
+          <select id="projectType" v-model="project.tipo_projeto" required>
+            <option value="" disabled selected>Selecione o tipo de projeto</option>
+            <option value="JARDIM_BORBOLETAS">Jardim de Borboletas</option>
+            <option value="HORTICULTURA">Horticultura</option>
+            <option value="PAISAGISMO">Paisagismo</option>
+            <option value="HIDROPONIA">Hidroponia</option>
+            <option value="JARDIM_TERAPEUTICO">Jardim Terapêutico</option>
+            <option value="JARDIM_ERVAS">Jardim de Ervas</option>
+            <option value="HORTA_ORGANICA">Horta Orgânica</option>
+            <option value="TERRARIO">Terrário</option>
+            <option value="JARDIM_FLORES">Jardim de Flores</option>
           </select>
-        </div>
-        <div class="form-group">
-          <label for="projectBudget">Orçamento do Projeto</label>
-          <input type="number" id="projectBudget" v-model="project.budget" required>
-        </div>
-        <div class="form-group">
-          <label for="projectResponsibles">Responsáveis</label>
-          <div class="responsibles-input">
-            <input type="text" id="projectResponsibles" v-model="newResponsible" @keyup.enter="addResponsible">
-            <button type="button" @click="addResponsible">+</button>
-          </div>
-          <ul class="responsibles-list">
-            <li v-for="(responsible, index) in project.responsibles" :key="index">
-              {{ responsible }}
-              <button type="button" @click="removeResponsible(index)">-</button>
-            </li>
-          </ul>
-        </div>
-        <div class="form-group">
-          <label for="projectAttachments">Fotos e Anexos</label>
-          <input type="file" id="projectAttachments" accept="image/*, application/pdf" @change="handleFileUpload">
         </div>
         <button type="submit">Cadastrar</button>
       </form>
@@ -48,37 +33,65 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data () {
     return {
       project: {
-        name: '',
-        description: '',
-        location: '',
-        budget: 0,
-        responsibles: [],
-        attachments: null
-      },
-      newResponsible: ''
+        nome: '',
+        descricao: '',
+        tipo_projeto: ''
+      }
     }
   },
   methods: {
-    submitForm () {
-      // Lógica para enviar o formulário
-      console.log('Formulário enviado:', this.project)
-    },
-    handleFileUpload (event) {
-      this.project.attachments = event.target.files[0]
-      console.log('Anexo carregado:', this.project.attachments)
-    },
-    addResponsible () {
-      if (this.newResponsible.trim() !== '') {
-        this.project.responsibles.push(this.newResponsible.trim())
-        this.newResponsible = ''
+    async submitForm () {
+      const userId = JSON.parse(localStorage.getItem('userData')).id
+      const token = localStorage.getItem('userToken')
+      const url = 'http://localhost:8080/projeto/criar'
+
+      const projectData = {
+        nome: this.project.nome,
+        descricao: this.project.descricao,
+        idUsuario: userId,
+        tipo_projeto: this.project.tipo_projeto
+      }
+
+      try {
+        const response = await axios.post(url, projectData, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        })
+
+        if (response.status === 201 || response.status === 200) {
+          this.$q.notify({
+            color: 'positive',
+            message: 'Projeto criado com sucesso!',
+            icon: 'check',
+            position: 'top',
+            timeout: 2000
+          })
+          this.resetForm()
+        } else {
+          throw new Error('Resposta inesperada do servidor')
+        }
+      } catch (error) {
+        this.$q.notify({
+          color: 'negative',
+          message: 'Erro ao criar projeto: ' + (error.response?.data?.message || error.message),
+          icon: 'error',
+          position: 'top',
+          timeout: 2000
+        })
       }
     },
-    removeResponsible (index) {
-      this.project.responsibles.splice(index, 1)
+    resetForm () {
+      this.project.nome = ''
+      this.project.descricao = ''
+      this.project.tipo_projeto = ''
     }
   }
 }
@@ -86,7 +99,7 @@ export default {
 
 <style>
 .create-project-wrapper {
-  background-color: #a3b18a; /* Verde musgo tonalidade pastel */
+  background-color: #a3b18a;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -115,7 +128,6 @@ label {
 }
 
 input[type="text"],
-input[type="number"],
 textarea,
 select {
   width: 100%;
@@ -138,49 +150,5 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
   background-color: #45a049;
-}
-
-.responsibles-input {
-  display: flex;
-  align-items: center;
-}
-
-.responsibles-input input[type="text"] {
-  flex: 1;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  margin-top: 6px;
-}
-
-.responsibles-input button {
-  margin-left: 10px;
-  padding: 6px 10px;
-  border-radius: 4px;
-  background-color: #4caf50;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-}
-
-.responsibles-list {
-  margin-top: 5px;
-  padding-left: 0;
-}
-
-.responsibles-list li {
-  list-style: none;
-  margin-bottom: 5px;
-}
-
-.responsibles-list li button {
-  margin-left: 5px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background-color: #ff4c4c; /* Vermelho */
-  color: #fff;
-  border: none;
-  cursor: pointer;
 }
 </style>

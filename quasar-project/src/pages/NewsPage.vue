@@ -1,8 +1,3 @@
-Para resolver o problema de a opção de comentários aparecer mesmo sem o usuário estar logado, você precisa garantir que a verificação do estado de login do usuário seja feita corretamente no método `checkUserLoggedIn`. Além disso, certifique-se de que essa verificação atualize corretamente a propriedade `isUserLoggedIn`.
-
-Aqui está uma versão corrigida do seu componente que garante que a verificação do login seja feita corretamente:
-
-```vue
 <template>
   <div class="news-page">
     <div class="news-header">
@@ -51,6 +46,7 @@ Aqui está uma versão corrigida do seu componente que garante que a verificaç�
               v-for="(comment, index) in selectedNews.comentarios"
               :key="comment.idcomentario"
             >
+              <p class="comment-author">{{ comment.nomeUsuario }}</p>
               <p>{{ comment.conteudo }}</p>
             </div>
           </div>
@@ -141,8 +137,9 @@ export default {
         return
       }
       try {
+        const userData = JSON.parse(localStorage.getItem('userData'))
         const response = await axios.post('http://localhost:8080/comentario/adicionar', {
-          idUsuario: 1,
+          idUsuario: userData.id,
           idNoticia: this.selectedNews.idNoticia,
           conteudo: this.newComment
         }, {
@@ -151,7 +148,12 @@ export default {
             'Authorization': `Bearer ${this.userToken}`
           }
         })
-        this.selectedNews.comentarios.push(response.data)
+        const newComment = {
+          ...response.data,
+          nomeUsuario: userData.nome,
+          conteudo: this.newComment
+        }
+        this.selectedNews.comentarios.push(newComment)
         this.newComment = ''
       } catch (error) {
         console.error('Erro ao adicionar comentário:', error)
@@ -307,13 +309,6 @@ export default {
   top: 10px;
   right: 15px;
   font-size: 24px;
-  color: #666
-}
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
   color: #666;
   cursor: pointer;
 }
@@ -333,6 +328,11 @@ export default {
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 10px;
+}
+
+.comment-author {
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
 .light-background {

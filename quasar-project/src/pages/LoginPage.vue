@@ -53,12 +53,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { setToken } from '../auth'
 import axios from 'axios'
 
 const $q = useQuasar()
 const router = useRouter()
-
 const loginData = ref({
   email: '',
   senha: ''
@@ -69,20 +67,17 @@ async function handleSubmit () {
   try {
     isLoading.value = true
     const response = await axios.post('http://localhost:8080/auth/login', loginData.value)
-
     if (response.data && response.data.token) {
       localStorage.setItem('userToken', response.data.token)
-      setToken(response.data.token)
-      // eslint-disable-next-line dot-notation
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`
-
+      localStorage.setItem('userData', JSON.stringify(response.data.usuario))
+      // alert()
+      // localStorage.setItem('user-id', response.data.usuario.i)
       $q.notify({
         color: 'positive',
         message: 'Login realizado com sucesso!',
         icon: 'check'
       })
-
-      router.push('/dashboard')
+      router.push('/profile')
     } else {
       throw new Error('Token não recebido')
     }
@@ -108,28 +103,17 @@ function handleCreateAccount () {
   console.log('Cadastrar Conta clicado')
   router.push('/cadastrar')
 }
-
 </script>
 
 <style scoped>
 .login-card {
   max-width: 400px;
-  margin: 0 auto;
-}
-.login-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin: auto;
 }
 .login-input {
-  max-width: 300px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 .login-btn {
-  margin-top: 20px;
-  transition: transform 0.2s ease-in-out;
-}
-.login-btn:active {
-  transform: scale(0.95);
+  width: 100%;
 }
 </style>
