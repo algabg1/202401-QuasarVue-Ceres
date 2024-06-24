@@ -70,7 +70,7 @@ async function handleSubmit () {
     if (response.data && response.data.token) {
       localStorage.setItem('userToken', response.data.token)
       localStorage.setItem('userData', JSON.stringify(response.data.usuario))
-
+      // alert(localStorage.getItem('userData'))
       $q.notify({
         color: 'positive',
         message: 'Login realizado com sucesso!',

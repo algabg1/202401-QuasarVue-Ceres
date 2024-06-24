@@ -92,7 +92,7 @@ const linksList = [
     title: 'Meus projetos',
     caption: '',
     icon: 'person_outline',
-    route: { name: '' },
+    route: { name: 'meus-projetos' },
     requiresAuth: true
   }
 ]

@@ -55,7 +55,7 @@ export default {
         nome: this.project.nome,
         descricao: this.project.descricao,
         idUsuario: userId,
-        tipo_projeto: this.project.tipo_projeto
+        tipoProjeto: this.project.tipo_projeto
       }
 
       try {
