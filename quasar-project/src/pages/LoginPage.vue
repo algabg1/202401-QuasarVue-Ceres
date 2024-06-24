@@ -70,14 +70,20 @@ async function handleSubmit () {
     if (response.data && response.data.token) {
       localStorage.setItem('userToken', response.data.token)
       localStorage.setItem('userData', JSON.stringify(response.data.usuario))
-      // alert()
-      // localStorage.setItem('user-id', response.data.usuario.i)
+
       $q.notify({
         color: 'positive',
         message: 'Login realizado com sucesso!',
         icon: 'check'
       })
-      router.push('/profile')
+
+      // Redireciona para a página de perfil
+      await router.push('/profile')
+
+      // Atualiza a página após um breve delay
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
     } else {
       throw new Error('Token não recebido')
     }
