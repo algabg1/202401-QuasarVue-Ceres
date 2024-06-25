@@ -228,7 +228,7 @@ onMounted(async () => {
 async function fetchPlantas () {
   try {
     const token = localStorage.getItem('userToken')
-    const response = await api.get('http://localhost:8080/planta/plantas', {
+    const response = await api.get('http://50.16.160.89:8080/planta/plantas', {
       headers: { Authorization: `Bearer ${token}` }
     })
     plantas.value = response.data
@@ -293,7 +293,7 @@ function confirmarExclusao (planta) {
 async function excluirPlanta () {
   try {
     const token = localStorage.getItem('userToken')
-    await api.delete(`http://localhost:8080/planta/${plantaSelecionada.value.id}`, {
+    await api.delete(`http://50.16.160.89:8080/planta/${plantaSelecionada.value.id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     $q.notify({

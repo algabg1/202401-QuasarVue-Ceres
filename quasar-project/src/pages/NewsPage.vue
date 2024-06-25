@@ -98,7 +98,7 @@ export default {
   methods: {
     async fetchNews () {
       try {
-        const response = await axios.get('http://localhost:8080/noticia/noticias')
+        const response = await axios.get('http://50.16.160.89:8080/noticia/noticias')
         this.newsItems = response.data
       } catch (error) {
         console.error('Erro ao buscar notícias:', error)
@@ -138,7 +138,7 @@ export default {
       }
       try {
         const userData = JSON.parse(localStorage.getItem('userData'))
-        const response = await axios.post('http://localhost:8080/comentario/adicionar', {
+        const response = await axios.post('http://50.16.160.89:8080/comentario/adicionar', {
           idUsuario: userData.id,
           idNoticia: this.selectedNews.idNoticia,
           conteudo: this.newComment
