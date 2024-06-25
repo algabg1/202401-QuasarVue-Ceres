@@ -50,7 +50,6 @@ export default {
       const userId = JSON.parse(localStorage.getItem('userData')).id
       const token = localStorage.getItem('userToken')
       const url = 'http://localhost:8080/projeto/criar'
-
       const projectData = {
         nome: this.project.nome,
         descricao: this.project.descricao,

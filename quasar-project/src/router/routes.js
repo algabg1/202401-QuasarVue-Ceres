@@ -10,7 +10,8 @@ const routes = [
       { path: 'profile', name: 'profile', component: () => import('pages/ProfilePage.vue') },
       { path: 'meus-projetos', name: 'meus-projetos', component: () => import('pages/MeusProjetos.vue') },
       { path: 'cadastrar', name: 'cadastrar', component: () => import('pages/register/register-view/RegisterView.vue') },
-      { path: 'cadastrar-projeto', name: 'cadastrar-projeto', component: () => import('pages/CadastrarProjeto.vue') }
+      { path: 'cadastrar-projeto', name: 'cadastrar-projeto', component: () => import('pages/CadastrarProjeto.vue') },
+      { path: 'plantas', name: 'plantas', component: () => import('src/pages/AsPlantas.vue') }
     ]
   },
   // { path: 'cadastrar', name: 'cadastrar', component: () => import('pages/CadastrarPage.vue') }

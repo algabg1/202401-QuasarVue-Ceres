@@ -94,6 +94,13 @@ const linksList = [
     icon: 'person_outline',
     route: { name: 'meus-projetos' },
     requiresAuth: true
+  },
+  {
+    title: 'plantas',
+    caption: '',
+    icon: 'person_outline',
+    route: { name: 'plantas' },
+    requiresAuth: true
   }
 ]
 
