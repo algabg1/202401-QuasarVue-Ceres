@@ -49,7 +49,7 @@ export default {
     async submitForm () {
       const userId = JSON.parse(localStorage.getItem('userData')).id
       const token = localStorage.getItem('userToken')
-      const url = 'http://50.16.160.89:8080/projeto/criar'
+      const url = 'http://54.82.62.218:8080/projeto/criar'
       const projectData = {
         nome: this.project.nome,
         descricao: this.project.descricao,

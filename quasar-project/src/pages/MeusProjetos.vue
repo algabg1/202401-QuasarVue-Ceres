@@ -151,8 +151,8 @@ async function fetchProjects () {
   try {
     const token = localStorage.getItem('userToken')
     const endpoint = isAdmin.value
-      ? 'http://50.16.160.89:8080/projeto/projetos'
-      : `http://50.16.160.89:8080/projeto/usuario/${user.value.id}`
+      ? 'http://54.82.62.218:8080/projeto/projetos'
+      : `http://54.82.62.218:8080/projeto/usuario/${user.value.id}`
 
     const response = await api.get(endpoint, {
       headers: { Authorization: `Bearer ${token}` }
@@ -216,7 +216,7 @@ async function saveNewProject () {
       tipoProjeto: newProject.value.tipoProjeto.value // Aqui garantimos que apenas o valor seja enviado
     }
     console.log('Project data being sent:', projectData) // Log para depuração
-    await api.post('http://50.16.160.89:8080/projeto/criar', projectData, {
+    await api.post('http://54.82.62.218:8080/projeto/criar', projectData, {
       headers: { Authorization: `Bearer ${token}` }
     })
     $q.notify({
@@ -250,7 +250,7 @@ function confirmDeleteProject (project) {
 async function deleteProject () {
   try {
     const token = localStorage.getItem('userToken')
-    await api.delete(`http://50.16.160.89:8080/projeto/${projectToDelete.value.idProjeto}`, {
+    await api.delete(`http://54.82.62.218:8080/projeto/${projectToDelete.value.idProjeto}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     $q.notify({
