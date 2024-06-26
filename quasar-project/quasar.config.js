@@ -47,8 +47,8 @@ export default configure((ctx) => {
       vueRouterMode: 'history', // available values: 'hash', 'history'
       env: {
         API_URL: ctx.dev
-          ? 'http://3.90.151.136:8080/'
-          : 'http://3.90.151.136:8080/'
+          ? 'http://3.81.127.231:8080/'
+          : 'http://3.81.127.231:8080/'
       },
       // vueRouterBase,
       // vueDevtools,
@@ -81,7 +81,7 @@ export default configure((ctx) => {
     devServer: {
       proxy: {
         '/auth': { // Proxy apenas para o endpoint de autenticação
-          target: 'http://3.90.151.136:8080/',
+          target: 'http://3.81.127.231:8080/',
           changeOrigin: true,
           secure: false,
           headers: {

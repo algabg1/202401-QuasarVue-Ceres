@@ -171,7 +171,7 @@ function openCriarNoticiaDialog () {
 async function adicionarPlanta () {
   try {
     const token = localStorage.getItem('userToken')
-    const response = await api.post('http://3.90.151.136:8080/planta/criar', novaplanta.value, {
+    const response = await api.post('http://3.81.127.231:8080/planta/criar', novaplanta.value, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
@@ -201,7 +201,7 @@ async function adicionarPlanta () {
 async function criarNoticia () {
   try {
     const token = localStorage.getItem('userToken')
-    const response = await api.post('http://3.90.151.136:8080/noticia/criar', noticia.value, {
+    const response = await api.post('http://3.81.127.231:8080/noticia/criar', noticia.value, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
