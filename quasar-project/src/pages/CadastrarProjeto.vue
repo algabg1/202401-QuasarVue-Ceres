@@ -49,7 +49,7 @@ export default {
     async submitForm () {
       const userId = JSON.parse(localStorage.getItem('userData')).id
       const token = localStorage.getItem('userToken')
-      const url = 'http://54.161.154.3:8080/projeto/criar'
+      const url = '{API_BASE_URL}:8080/projeto/criar'
       const projectData = {
         nome: this.project.nome,
         descricao: this.project.descricao,

@@ -47,8 +47,8 @@ export default configure((ctx) => {
       vueRouterMode: 'history', // available values: 'hash', 'history'
       env: {
         API_URL: ctx.dev
-          ? 'http://54.161.154.3:8080/'
-          : 'http://54.161.154.3:8080/'
+          ? '{API_BASE_URL}:8080/'
+          : '{API_BASE_URL}:8080/'
       },
       // vueRouterBase,
       // vueDevtools,
@@ -81,7 +81,7 @@ export default configure((ctx) => {
     devServer: {
       proxy: {
         '/auth': { // Proxy apenas para o endpoint de autenticação
-          target: 'http://54.161.154.3:8080/',
+          target: '{API_BASE_URL}:8080/',
           changeOrigin: true,
           secure: false,
           headers: {

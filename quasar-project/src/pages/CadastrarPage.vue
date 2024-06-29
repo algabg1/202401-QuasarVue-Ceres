@@ -76,7 +76,7 @@ export default {
       }
       isLoading.value = true
       try {
-        const response = await axios.post('http://54.161.154.3:8080/auth/registrar', registerData.value)
+        const response = await axios.post('{API_BASE_URL}:8080/auth/registrar', registerData.value)
         if (response.status === 201 || response.status === 200) {
           alert('Cadastro realizado com sucesso!')
           router.push('/entrar')

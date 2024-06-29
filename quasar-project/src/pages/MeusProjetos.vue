@@ -262,7 +262,7 @@ function openAddPlantsDialog () {
 async function fetchAvailablePlants () {
   try {
     const token = localStorage.getItem('userToken')
-    const response = await api.get('http://54.161.154.3:8080/planta/get-planta-to-projeto', {
+    const response = await api.get('{API_BASE_URL}:8080/planta/get-planta-to-projeto', {
       headers: { Authorization: `Bearer ${token}` }
     })
     availablePlants.value = response.data
@@ -293,7 +293,7 @@ async function addPlantsToProject () {
       idprojeto: selectedProject.value.idProjeto
     }))
 
-    await api.post('http://54.161.154.3:8080/projeto-planta/adicionar-planta-projeto', plantsToAdd, {
+    await api.post('{API_BASE_URL}:8080/projeto-planta/adicionar-planta-projeto', plantsToAdd, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
@@ -336,7 +336,7 @@ async function viewProject (project) {
 async function removePlant () {
   try {
     const token = localStorage.getItem('userToken')
-    await api.delete(`http://54.161.154.3:8080/projeto-planta/remover-planta/${plantToRemove.value.id}`, {
+    await api.delete(`{API_BASE_URL}:8080/projeto-planta/remover-planta/${plantToRemove.value.id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
@@ -374,7 +374,7 @@ function cancelEdit () {
 async function fetchProjectPlants (projectId) {
   try {
     const token = localStorage.getItem('userToken')
-    const response = await api.get(`http://54.161.154.3:8080/projeto-planta/minhas-plantas/${projectId}`, {
+    const response = await api.get(`{API_BASE_URL}:8080/projeto-planta/minhas-plantas/${projectId}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     projectPlants.value = response.data
@@ -406,7 +406,7 @@ async function saveEditedProject () {
       tipoProjeto: editingProject.value.tipoProjeto.value || editingProject.value.tipoProjeto
     }
 
-    await api.put(`http://54.161.154.3:8080/projeto/editar/${editingProject.value.idProjeto}`, projectData, {
+    await api.put(`{API_BASE_URL}:8080/projeto/editar/${editingProject.value.idProjeto}`, projectData, {
       headers: { Authorization: `Bearer ${token}` }
     })
 
@@ -468,8 +468,8 @@ async function fetchProjects () {
   try {
     const token = localStorage.getItem('userToken')
     const endpoint = isAdmin.value
-      ? 'http://54.161.154.3:8080/projeto/projetos'
-      : `http://54.161.154.3:8080/projeto/usuario/${user.value.id}`
+      ? '{API_BASE_URL}:8080/projeto/projetos'
+      : `{API_BASE_URL}:8080/projeto/usuario/${user.value.id}`
 
     const response = await api.get(endpoint, {
       headers: { Authorization: `Bearer ${token}` }
@@ -533,7 +533,7 @@ async function saveNewProject () {
       tipoProjeto: newProject.value.tipoProjeto.value // Aqui garantimos que apenas o valor seja enviado
     }
     console.log('Project data being sent:', projectData) // Log para depuração
-    await api.post('http://54.161.154.3:8080/projeto/criar', projectData, {
+    await api.post('{API_BASE_URL}:8080/projeto/criar', projectData, {
       headers: { Authorization: `Bearer ${token}` }
     })
     $q.notify({
@@ -562,7 +562,7 @@ function confirmDeleteProject (project) {
 async function deleteProject () {
   try {
     const token = localStorage.getItem('userToken')
-    await api.delete(`http://54.161.154.3:8080/projeto/${projectToDelete.value.idProjeto}`, {
+    await api.delete(`{API_BASE_URL}:8080/projeto/${projectToDelete.value.idProjeto}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     $q.notify({
