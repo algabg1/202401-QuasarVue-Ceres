@@ -66,7 +66,7 @@ const isLoading = ref(false)
 async function handleSubmit () {
   try {
     isLoading.value = true
-    const response = await axios.post('http://3.81.127.231:8080/auth/login', loginData.value)
+    const response = await axios.post('http://54.161.154.3:8080/auth/login', loginData.value)
     if (response.data && response.data.token) {
       localStorage.setItem('userToken', response.data.token)
       localStorage.setItem('userData', JSON.stringify(response.data.usuario))

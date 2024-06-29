@@ -286,7 +286,7 @@ function editarPlanta (planta) {
 async function submitEdit () {
   try {
     const token = localStorage.getItem('userToken')
-    await api.put(`http://3.81.127.231:8080/planta/edit/${editingPlanta.value.id}`, editingPlanta.value, {
+    await api.put(`http://54.161.154.3:8080/planta/edit/${editingPlanta.value.id}`, editingPlanta.value, {
       headers: { Authorization: `Bearer ${token}` }
     })
     $q.notify({
@@ -309,7 +309,7 @@ async function submitEdit () {
 async function fetchPlantas () {
   try {
     const token = localStorage.getItem('userToken')
-    const response = await api.get('http://3.81.127.231:8080/planta/plantas', {
+    const response = await api.get('http://54.161.154.3:8080/planta/plantas', {
       headers: { Authorization: `Bearer ${token}` },
       params: {
         page: currentPage.value - 1, // A API provavelmente espera páginas começando em 0
@@ -380,7 +380,7 @@ function confirmarExclusao (planta) {
 async function excluirPlanta () {
   try {
     const token = localStorage.getItem('userToken')
-    await api.delete(`http://3.81.127.231:8080/planta/${plantaSelecionada.value.id}`, {
+    await api.delete(`http://54.161.154.3:8080/planta/${plantaSelecionada.value.id}`, {
       headers: { Authorization: `Bearer ${token}` }
     })
     $q.notify({
