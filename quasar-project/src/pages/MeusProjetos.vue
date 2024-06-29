@@ -44,6 +44,7 @@
               <p>{{ project.descricao }}</p>
             </q-card-section>
             <q-card-actions align="right">
+              <q-btn flat color="info" label="Visualizar" @click="viewProject(project)" />
               <q-btn flat color="primary" label="Editar" @click="editProject(project)" />
               <q-btn flat color="negative" label="Excluir" @click="confirmDeleteProject(project)" />
             </q-card-actions>
@@ -54,6 +55,82 @@
         <p>Nenhum projeto encontrado.</p>
       </div>
     </div>
+
+    <q-dialog v-model="viewProjectDialog" full-width>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">Detalhes do Projeto</div>
+        </q-card-section>
+        <q-card-section v-if="selectedProject">
+          <div class="text-h5 q-mb-md">{{ selectedProject.nome }}</div>
+          <q-chip :color="getProjectTypeColor(selectedProject.tipoProjeto)" text-color="white">
+            {{ selectedProject.tipoProjeto }}
+          </q-chip>
+          <p class="q-mt-md">{{ selectedProject.descricao }}</p>
+
+          <div class="text-h6 q-mt-lg">Plantas do Projeto</div>
+          <q-btn color="primary" icon="add" label="Adicionar Plantas" @click="openAddPlantsDialog" class="q-mb-md" />
+          <div v-if="projectPlants.length" class="row q-col-gutter-md q-mt-md">
+            <div v-for="plantaProj in projectPlants" :key="plantaProj.id" class="col-12 col-sm-6 col-md-4">
+              <q-card>
+                <q-card-section>
+                  <div class="row items-center justify-between">
+                    <div>
+                      <div class="text-h6">{{ plantaProj.planta.nome }}</div>
+                      <div class="text-subtitle2">{{ plantaProj.planta.nome_cientifico }}</div>
+                    </div>
+                    <q-btn
+                      flat
+                      round
+                      color="negative"
+                      icon="remove_circle"
+                      @click="confirmRemovePlant(plantaProj)"
+                    >
+                      <q-tooltip>Remover planta do projeto</q-tooltip>
+                    </q-btn>
+                  </div>
+                </q-card-section>
+                <q-card-section>
+                  <p>{{ plantaProj.planta.descricao }}</p>
+                  <p><strong>Origem:</strong> {{ plantaProj.planta.origem }}</p>
+                  <p><strong>Cuidados:</strong> {{ plantaProj.planta.cuidados }}</p>
+                  <p><strong>Categoria:</strong> {{ plantaProj.planta.categoria }}</p>
+                </q-card-section>
+              </q-card>
+            </div>
+          </div>
+          <div v-else class="text-center q-mt-md">
+            Nenhuma planta associada a este projeto.
+          </div>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Fechar" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Edit Project Dialog -->
+    <q-dialog v-model="editProjectDialog" persistent>
+      <q-card style="min-width: 350px; max-width: 600px; width: 100%;">
+        <q-card-section>
+          <div class="text-h6">Editar Projeto</div>
+        </q-card-section>
+        <q-card-section class="q-pt-none">
+          <q-input v-model="editingProject.nome" label="Nome do Projeto" dense />
+          <q-input v-model="editingProject.descricao" label="Descrição" type="textarea" dense />
+          <q-select
+            v-model="editingProject.tipoProjeto"
+            :options="projectTypesForNewProject"
+            label="Tipo de Projeto"
+            dense
+          />
+        </q-card-section>
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancelar" v-close-popup @click="cancelEdit" />
+          <q-btn flat label="Salvar" @click="saveEditedProject" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
     <!-- New Project Dialog -->
     <q-dialog v-model="newProjectDialog" persistent>
@@ -78,7 +155,7 @@
       </q-card>
     </q-dialog>
 
-    <!-- Confirm Delete Dialog -->
+    <!-- Confirm Delete Project Dialog -->
     <q-dialog v-model="confirmDelete">
       <q-card>
         <q-card-section class="row items-center">
@@ -88,6 +165,57 @@
         <q-card-actions align="right">
           <q-btn flat label="Cancelar" color="primary" v-close-popup />
           <q-btn flat label="Excluir" color="negative" @click="deleteProject" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Confirm Remove Plant Dialog -->
+    <q-dialog v-model="confirmRemovePlantDialog">
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="warning" color="warning" text-color="white" />
+          <span class="q-ml-sm">Tem certeza que deseja remover esta planta do projeto?</span>
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancelar" color="primary" v-close-popup />
+          <q-btn flat label="Remover" color="negative" @click="removePlant" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- Add Plants Dialog -->
+    <q-dialog v-model="addPlantsDialog">
+      <q-card style="width: 700px; max-width: 80vw;">
+        <q-card-section>
+          <div class="text-h6">Adicionar Plantas ao Projeto</div>
+        </q-card-section>
+
+        <q-card-section>
+          <q-select
+            v-model="selectedPlantsToAdd"
+            :options="availablePlants"
+            label="Selecione as plantas"
+            multiple
+            use-chips
+            stack-label
+          >
+            <template v-slot:option="{ itemProps, itemEvents, opt, selected, toggleOption }">
+              <q-item v-bind="itemProps" v-on="itemEvents">
+                <q-item-section>
+                  <q-item-label>{{ opt.nome }}</q-item-label>
+                  <q-item-label caption>{{ opt.nome_cientifico }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-toggle :model-value="selected" @update:model-value="toggleOption(opt)" />
+                </q-item-section>
+              </q-item>
+            </template>
+          </q-select>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancelar" color="primary" v-close-popup />
+          <q-btn flat label="Adicionar" color="positive" @click="addPlantsToProject" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -107,9 +235,198 @@ const confirmDelete = ref(false)
 const projectToDelete = ref(null)
 const searchTerm = ref('')
 const selectedType = ref(null)
-
+const viewProjectDialog = ref(false)
+const selectedProject = ref(null)
+const projectPlants = ref([])
+const confirmRemovePlantDialog = ref(false)
+const plantToRemove = ref(null)
 const user = ref(JSON.parse(localStorage.getItem('userData')))
 const isAdmin = computed(() => user.value.user_role === 'ADMIN')
+const addPlantsDialog = ref(false)
+const selectedPlantsToAdd = ref([])
+const availablePlants = ref([])
+// Adicione estas variáveis ref
+const editProjectDialog = ref(false)
+const editingProject = ref({
+  idProjeto: null,
+  nome: '',
+  descricao: '',
+  tipoProjeto: ''
+})
+
+function openAddPlantsDialog () {
+  addPlantsDialog.value = true
+  fetchAvailablePlants()
+}
+
+async function fetchAvailablePlants () {
+  try {
+    const token = localStorage.getItem('userToken')
+    const response = await api.get('http://3.81.127.231:8080/planta/get-planta-to-projeto', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    availablePlants.value = response.data
+  } catch (error) {
+    console.error('Error fetching available plants:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Erro ao carregar plantas disponíveis',
+      icon: 'error'
+    })
+  }
+}
+
+async function addPlantsToProject () {
+  if (selectedPlantsToAdd.value.length === 0) {
+    $q.notify({
+      color: 'warning',
+      message: 'Selecione pelo menos uma planta para adicionar',
+      icon: 'warning'
+    })
+    return
+  }
+
+  try {
+    const token = localStorage.getItem('userToken')
+    const plantsToAdd = selectedPlantsToAdd.value.map(plant => ({
+      idplanta: plant.id,
+      idprojeto: selectedProject.value.idProjeto
+    }))
+
+    await api.post('http://3.81.127.231:8080/projeto-planta/adicionar-planta-projeto', plantsToAdd, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    $q.notify({
+      color: 'positive',
+      message: 'Plantas adicionadas ao projeto com sucesso',
+      icon: 'check'
+    })
+
+    addPlantsDialog.value = false
+    selectedPlantsToAdd.value = []
+    await fetchProjectPlants(selectedProject.value.idProjeto)
+  } catch (error) {
+    console.error('Error adding plants to project:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Erro ao adicionar plantas ao projeto',
+      icon: 'error'
+    })
+  }
+}
+
+// Modifique a função editProject
+function editProject (project) {
+  editingProject.value = { ...project }
+  editProjectDialog.value = true
+}
+
+function confirmRemovePlant (plantaProj) {
+  plantToRemove.value = plantaProj
+  confirmRemovePlantDialog.value = true
+}
+
+async function viewProject (project) {
+  selectedProject.value = project
+  viewProjectDialog.value = true
+  await fetchProjectPlants(project.idProjeto)
+}
+
+async function removePlant () {
+  try {
+    const token = localStorage.getItem('userToken')
+    await api.delete(`http://3.81.127.231:8080/projeto-planta/remover-planta/${plantToRemove.value.id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    // Remover a planta da lista local
+    projectPlants.value = projectPlants.value.filter(p => p.id !== plantToRemove.value.id)
+
+    $q.notify({
+      color: 'positive',
+      message: 'Planta removida do projeto com sucesso',
+      icon: 'check'
+    })
+  } catch (error) {
+    console.error('Error removing plant from project:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Erro ao remover planta do projeto',
+      icon: 'error'
+    })
+  } finally {
+    plantToRemove.value = null
+  }
+}
+
+// Adicione estas novas funções
+function cancelEdit () {
+  editProjectDialog.value = false
+  editingProject.value = {
+    idProjeto: null,
+    nome: '',
+    descricao: '',
+    tipoProjeto: ''
+  }
+}
+
+async function fetchProjectPlants (projectId) {
+  try {
+    const token = localStorage.getItem('userToken')
+    const response = await api.get(`http://3.81.127.231:8080/projeto-planta/minhas-plantas/${projectId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    projectPlants.value = response.data
+  } catch (error) {
+    console.error('Error fetching project plants:', error)
+    $q.notify({
+      color: 'negative',
+      message: 'Erro ao carregar plantas do projeto',
+      icon: 'error'
+    })
+  }
+}
+
+async function saveEditedProject () {
+  // Validação de campos
+  if (!editingProject.value.nome || !editingProject.value.descricao || !editingProject.value.tipoProjeto) {
+    $q.notify({
+      color: 'negative',
+      message: 'Todos os campos devem ser preenchidos',
+      icon: 'error'
+    })
+    return
+  }
+
+  try {
+    const token = localStorage.getItem('userToken')
+    const projectData = {
+      ...editingProject.value,
+      tipoProjeto: editingProject.value.tipoProjeto.value || editingProject.value.tipoProjeto
+    }
+
+    await api.put(`http://3.81.127.231:8080/projeto/editar/${editingProject.value.idProjeto}`, projectData, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    $q.notify({
+      color: 'positive',
+      message: 'Projeto atualizado com sucesso',
+      icon: 'check'
+    })
+
+    editProjectDialog.value = false
+    await fetchProjects()
+  } catch (error) {
+    console.error('Error updating project:', error.response ? error.response.data : error)
+    $q.notify({
+      color: 'negative',
+      message: 'Erro ao atualizar projeto: ' + (error.response?.data?.message || error.message),
+      icon: 'error'
+    })
+  }
+}
 
 const newProject = ref({
   nome: '',
@@ -235,11 +552,6 @@ async function saveNewProject () {
       icon: 'error'
     })
   }
-}
-
-function editProject (project) {
-  // Implement edit functionality
-  console.log('Edit project:', project)
 }
 
 function confirmDeleteProject (project) {
